@@ -2,11 +2,12 @@ Node Bittrex API
 =========
 
 Node Bittrex API is an asynchronous node.js library for the Bittrex API - https://bittrex.com/.
-The Bittrex API data can be received either as a GET request or via Websockets API (the Stream option will no longer be maintained and will be removed in further releases - please switch to Websockets if you want to use real Streams).
+The Bittrex API data can be received either as a GET request or via Websockets API.
 
-Documentation to the Bittrex API: https://bittrex.com/Home/Api
+Documentation for the Bittrex API: https://bittrex.com/Home/Api
 
-This Library was created by  [Adrian Soluch (@n0mad01)](https://github.com/n0mad01/) [soluch.us](http://soluch.us) and is licensed under the [MIT license](https://github.com/n0mad01/node.bittrex.api/blob/master/LICENSE).
+This Library is licensed under the [MIT license](https://github.com/n0mad01/node.bittrex.api/blob/master/LICENSE).
+
 
 Contributors
 ----
@@ -19,21 +20,25 @@ Thanks go to the people who have contributed code to this Library.
 * [caffeinewriter](https://github.com/caffeinewriter)
 * [apense](https://github.com/apense)
 
+
 Before you start
 ----
 This is just a quick reminder that you are handling coins with this library (and thus real money), so, understand the situation as much as possible and make everything to prevent losing them.
 
 Here is a small checklist you should go through before you start:
 
-1. Make sure you don't give your api key more rights as absolutely necessary - for first testing READ INFO alone should be enough! (bittrex.com under: Settings/API Keys)
+- Make sure you don't give your api key more rights as absolutely necessary - for first testing READ INFO alone should be enough! (bittrex.com under: Settings/API Keys)
+
 ![bittrex_ap_keys_control](https://user-images.githubusercontent.com/260321/29748739-a6c2c00e-8b1c-11e7-95ec-1b0221348235.png)
-2. make sure to understand the API Key permissions
+
+- make sure to understand the API Key permissions
     1. READ INFO - Allows you to read private details such as open orders, order history, balances, etc
     2. TRADE LIMIT - Allows you to create/cancel trade limit buy/sell orders
     3. TRADE MARKET - allows you to create/cancel market buy/sell orders
     4. WITHDRAW - Allows you to withdraw to another address
-3. Make use of the Bittrex IP Whitelist as also the Withdrawal Whitelist features
-4. Do not ever commit your API Keys to GitHub or expose them under any circumstances!
+- Make use of the Bittrex IP Whitelist as also the Withdrawal Whitelist features
+- Do not ever commit your API Keys to GitHub or expose them under any circumstances!
+
 
 Quick start
 ----
@@ -45,7 +50,7 @@ $ npm install node.bittrex.api
 var bittrex = require('node.bittrex.api');
 bittrex.options({
   'apikey' : API_KEY,
-  'apisecret' : API_SECRET, 
+  'apisecret' : API_SECRET,
 });
 bittrex.getmarketsummaries( function( data, err ) {
   if (err) {
@@ -83,10 +88,10 @@ var bittrex = require('./node.bittrex.api.js');
 ```javascript
 bittrex.options({
   'apikey' : API_KEY,
-  'apisecret' : API_SECRET, 
+  'apisecret' : API_SECRET,
   'stream' : true, // will be removed from future versions
   'verbose' : true,
-  'cleartext' : false 
+  'cleartext' : false
 });
 ```
 
@@ -113,6 +118,7 @@ you'll get the reversed order:
 ```javascript
 getmarkethistory({market : 'USDT-BTC'}, function(error, data) {});
 ```
+
 
 Websockets
 --
@@ -237,10 +243,10 @@ var url = 'http://fake.bittrex.com/api/v1.1/public/getticker?market=USDT-BTCXXX'
 bittrex.sendCustomRequest( url, function( data, err ) {
   if (err) {
     /**
-      { 
+      {
         success: false,
         message: 'URL request error',
-        error: 
+        error:
          { Error: getaddrinfo ENOTFOUND fake.bittrex.com fake.bittrex.com:80
              at errnoException (dns.js:28:10)
              at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:76:26)
@@ -265,7 +271,7 @@ var url = 'http://bittrex.com/api/v1.1/public/getfakeendpoint';
 bittrex.sendCustomRequest( url, function( data, err ) {
   if (err) {
     /**
-      { 
+      {
         success: false,
         message: 'URL request error',
         error: undefined,
@@ -293,7 +299,7 @@ bittrex.getcandles({
       {
         success: false,
         message: 'INVALID_TICK_INTERVAL',
-        result: null 
+        result: null
       }
     */
     return console.error(err);
@@ -312,7 +318,7 @@ Optional parameters may have to be looked up at https://bittrex.com/Home/Api.
 
 > Also: the method **sendCustomRequest** enables completely custom requests, regardless the specific API methods.
 
-##### sendCustomRequest 
+##### sendCustomRequest
 - url           String
 - callback      Function
 - credentials   Boolean     optional    whether the credentials should be applied to the request/stream or not, default is set to false.
@@ -444,8 +450,8 @@ npm test tests/private.js
 
 ##### Testing private methods
 
-Testing private method endpoints requires an api key/secret which should be 
-installed in to ``tests/config.json`` - you will find an example file in 
+Testing private method endpoints requires an api key/secret which should be
+installed in to ``tests/config.json`` - you will find an example file in
 ``tests/config_example.json``.
 
 ```bash

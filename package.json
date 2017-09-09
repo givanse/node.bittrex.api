@@ -9,12 +9,10 @@
     "altcoin",
     "bittrex"
   ],
-  "author": "Adrian Soluch ( https://github.com/n0mad01 )",
+  "author": "David Parlevliet ( https://github.com/dparlevliet )",
   "contributors": [],
   "license": "MIT",
   "dependencies": {
-    "JSONStream": ">= 0.8.4",
-    "event-stream": ">= 3.1.5",
     "jsonic": "^0.3.0",
     "object-assign": "^4.1.1",
     "request": ">= 2.35.0",
@@ -22,17 +20,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/n0mad01/node.bittrex.api"
+    "url": "https://github.com/dparlevliet/node.bittrex.api"
   },
   "main": "node.bittrex.api.js",
   "engines": {
     "node": ">=0.10"
   },
   "bugs": {
-    "url": "https://github.com/n0mad01/node.bittrex.api/issues",
-    "email": "adrian.soluch@gmail.com"
+    "url": "https://github.com/dparlevliet/node.bittrex.api/issues",
+    "email": "david.parlevliet.github@gmail.com"
   },
-  "homepage": "https://github.com/n0mad01/node.bittrex.api",
+  "homepage": "https://github.com/dparlevliet/node.bittrex.api",
   "scripts": {
     "test": "mocha"
   },

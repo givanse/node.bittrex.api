@@ -1,20 +1,18 @@
 /* ============================================================
  * node.bittrex.api
- * https://github.com/n0mad01/node.bittrex.api
+ * https://github.com/dparlevliet/node.bittrex.api
  *
  * ============================================================
- * Copyright 2014-2017, Adrian Soluch - http://soluch.us/
+ * Copyright 2014-, Adrian Soluch, David Parlevliet
  * Released under the MIT License
  * ============================================================ */
-var NodeBittrexApi = function() {
 
+var NodeBittrexApi = function() {
   'use strict';
 
   var request = require('request'),
     assign = require('object-assign'),
     hmac_sha512 = require('./hmac-sha512.js'),
-    JSONStream = require('JSONStream'),
-    es = require('event-stream'),
     jsonic = require('jsonic'),
     signalR = require('signalr-client'),
     wsclient;
@@ -37,7 +35,6 @@ var NodeBittrexApi = function() {
     apisecret: 'APISECRET',
     verbose: false,
     cleartext: false,
-    stream: false,
     inverse_callback_arguments: false,
   };
 
@@ -100,43 +97,31 @@ var NodeBittrexApi = function() {
   var sendRequestCallback = function(callback, op) {
     var start = Date.now();
 
-    switch (opts.stream) {
-      case true:
-        request(op)
-          .pipe(JSONStream.parse('*'))
-          .pipe(es.mapSync(function(data) {
-            callback(data);
-            ((opts.verbose) ? console.log("streamed from " + op.uri + " in: %ds", (Date.now() - start) / 1000) : '');
-          }));
-        break;
-      case false:
-        request(op, function(error, result, body) {
-          ((opts.verbose) ? console.log("requested from " + op.uri + " in: %ds", (Date.now() - start) / 1000) : '');
-          if (!body || !result || result.statusCode != 200) {
-            var errorObj = {
-              success: false,
-              message: 'URL request error',
-              error: error,
-              result: result,
-            };
-            return ((opts.inverse_callback_arguments) ?
-              callback(errorObj, null) :
-              callback(null, errorObj));
-          } else {
-            result = JSON.parse(body);
-            if (!result.success) {
-              // error returned by bittrex API - forward the result as an error
-              return ((opts.inverse_callback_arguments) ?
-                callback(result, null) :
-                callback(null, result));
-            }
-            return ((opts.inverse_callback_arguments) ?
-              callback(null, ((opts.cleartext) ? body : result)) :
-              callback(((opts.cleartext) ? body : result), null));
-          }
-        });
-        break;
-    }
+    request(op, function(error, result, body) {
+      ((opts.verbose) ? console.log("requested from " + op.uri + " in: %ds", (Date.now() - start) / 1000) : '');
+      if (!body || !result || result.statusCode != 200) {
+        var errorObj = {
+          success: false,
+          message: 'URL request error',
+          error: error,
+          result: result,
+        };
+        return ((opts.inverse_callback_arguments) ?
+          callback(errorObj, null) :
+          callback(null, errorObj));
+      } else {
+        result = JSON.parse(body);
+        if (!result.success) {
+          // error returned by bittrex API - forward the result as an error
+          return ((opts.inverse_callback_arguments) ?
+            callback(result, null) :
+            callback(null, result));
+        }
+        return ((opts.inverse_callback_arguments) ?
+          callback(null, ((opts.cleartext) ? body : result)) :
+          callback(((opts.cleartext) ? body : result), null));
+      }
+    });
   };
 
   var publicApiCall = function(url, callback, options) {
