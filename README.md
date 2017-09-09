@@ -6,14 +6,14 @@ The Bittrex API data can be received either as a GET request or via Websockets A
 
 Documentation for the Bittrex API: https://bittrex.com/Home/Api
 
-This Library is licensed under the [MIT license](https://github.com/n0mad01/node.bittrex.api/blob/master/LICENSE).
+This Library is licensed under the [MIT license](https://github.com/dparlevliet/node.bittrex.api/blob/master/LICENSE).
 
 
 Contributors
 ----
 Thanks go to the people who have contributed code to this Library.
 
-* [dparlevliet](https://github.com/dparlevliet) Special kudos - thanks to him i was able to add the Websocket API, also did he added the error object/handling param and the getcandles method for the Bittrex API V2
+* [cyberwlf](https://github.com/armandohg) & [armandohg](https://github.com/armandohg) - Special thanks to them for the cloudflare websocket research and fix but also thanks to everyone else in [issue #67](https://github.com/n0mad01/node.bittrex.api/issues/67)
 * [samuelhei](https://github.com/samuelhei) Special kudos - thanks to him all missing calls are complemented as also structural improvements have been made.
 * [mhuggins](https://github.com/mhuggins)
 * [192-sean](https://github.com/192-sean)
@@ -89,7 +89,6 @@ var bittrex = require('./node.bittrex.api.js');
 bittrex.options({
   'apikey' : API_KEY,
   'apisecret' : API_SECRET,
-  'stream' : true, // will be removed from future versions
   'verbose' : true,
   'cleartext' : false
 });
@@ -122,12 +121,51 @@ getmarkethistory({market : 'USDT-BTC'}, function(error, data) {});
 
 Websockets
 --
-following methods are implemented:
+
+#### Basic example
+```javascript
+bittrex.websockets.client(function() {
+	console.log('Websocket connected');
+  bittrex.websockets.subscribe(['BTC-ETH'], function(data) {
+    if (data.M === 'updateExchangeState') {
+      data.A.forEach(function(data_for) {
+        console.log('Market Update for '+ data_for.MarketName, data_for);
+      });
+    }
+  });
+});
+```
+
+#### Basic example with event emitters
+```javascript
+var websocketClient = bittrex.websockets.client();
+bittrex.options({
+	websocket: {
+    onConnect: function() {
+    	console.log('Websocket connected');
+      bittrex.websockets.subscribe(['BTC-ETH'], function(data) {
+        if (data.M === 'updateExchangeState') {
+          data.A.forEach(function(data_for) {
+            console.log('Market Update for '+ data_for.MarketName, data_for);
+          });
+        }
+      });
+    },
+    onDisconnect: function() {
+    	console.log('Websocket disconnected');
+    }
+  }
+});
+
+```
+
+
+#### Available methods
 > websockets.listen, websockets.subscribe
 
 listen example
 ```javascript
-var websocketsclient = bittrex.websockets.listen( function( data ) {
+bittrex.websockets.listen( function( data ) {
   if (data.M === 'updateSummaryState') {
     data.A.forEach(function(data_for) {
       data_for.Deltas.forEach(function(marketsDelta) {
@@ -140,7 +178,7 @@ var websocketsclient = bittrex.websockets.listen( function( data ) {
 
 subscribe example
 ```javascript
-var websocketsclient = bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN'], function(data) {
+bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN'], function(data) {
   if (data.M === 'updateExchangeState') {
     data.A.forEach(function(data_for) {
       console.log('Market Update for '+ data_for.MarketName, data_for);
@@ -149,10 +187,10 @@ var websocketsclient = bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN
 });
 ```
 
-simple client & redefine serviceHandlers example
+#### Websocket serviceHandlers example
+You can override the libraries logic for the following events. Note, this will
+replace the libraries logic.
 ```javascript
-var websocketsclient = bittrex.websockets.client();
-
 websocketsclient.serviceHandlers.reconnecting = function (message) {
   return true; // set to true stops reconnect/retrying
 }
@@ -180,12 +218,10 @@ reconnecting: function (retry { inital: true/false, count: 0} ) {
 ```
 
 
-Streams - please notice that streams will be removed from future versions
+Streams
 --
-To activate Streaming simply add to your options:
-```javascript
-'stream' : true
-```
+Streams have been removed
+
 
 
 Examples
@@ -222,10 +258,8 @@ Libraries
 Websockets depends on the following npm packages:
 - signalR websockets client https://www.npmjs.com/package/signalrjs
 - jsonic JSON parser https://www.npmjs.com/package/jsonic
+- cloudscraper https://www.npmjs.com/package/cloudscraper
 
-Streaming depends on the following npm packages (will be removed in future versions):
-- JSONStream https://www.npmjs.org/package/JSONStream
-- event-stream https://www.npmjs.org/package/event-stream
 
 Other libraries utilized:
 - request https://www.npmjs.org/package/request
