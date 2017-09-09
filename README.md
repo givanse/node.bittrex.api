@@ -453,9 +453,3 @@ cp tests/tests_example.json tests/config.json
 vim tests/config.json
 ```
 
-
-Donations welcome! 
----
-
-BTC
-> 17gtixgt4Q8hZcSictQwj5WUdgFjegCt36
