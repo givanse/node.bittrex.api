@@ -125,7 +125,7 @@ Websockets
 #### Basic example
 ```javascript
 bittrex.websockets.client(function() {
-	console.log('Websocket connected');
+  console.log('Websocket connected');
   bittrex.websockets.subscribe(['BTC-ETH'], function(data) {
     if (data.M === 'updateExchangeState') {
       data.A.forEach(function(data_for) {
@@ -140,9 +140,9 @@ bittrex.websockets.client(function() {
 ```javascript
 var websocketClient = bittrex.websockets.client();
 bittrex.options({
-	websocket: {
+  websocket: {
     onConnect: function() {
-    	console.log('Websocket connected');
+      console.log('Websocket connected');
       bittrex.websockets.subscribe(['BTC-ETH'], function(data) {
         if (data.M === 'updateExchangeState') {
           data.A.forEach(function(data_for) {
@@ -152,7 +152,7 @@ bittrex.options({
       });
     },
     onDisconnect: function() {
-    	console.log('Websocket disconnected');
+      console.log('Websocket disconnected');
     }
   }
 });
