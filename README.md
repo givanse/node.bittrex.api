@@ -13,6 +13,7 @@ Contributors
 ----
 Thanks go to the people who have contributed code to this Library.
 
+* [n0mad01](https://github.com/n0mad01) Special kudos - the original creator of the library. Thanks for the hard work.
 * [cyberwlf](https://github.com/armandohg) & [armandohg](https://github.com/armandohg) - Special thanks to them for the cloudflare websocket research and fix but also thanks to everyone else in [issue #67](https://github.com/n0mad01/node.bittrex.api/issues/67)
 * [samuelhei](https://github.com/samuelhei) Special kudos - thanks to him all missing calls are complemented as also structural improvements have been made.
 * [mhuggins](https://github.com/mhuggins)
@@ -138,7 +139,6 @@ bittrex.websockets.client(function() {
 
 #### Basic example with event emitters
 ```javascript
-var websocketClient = bittrex.websockets.client();
 bittrex.options({
   websockets: {
     onConnect: function() {
@@ -157,15 +157,22 @@ bittrex.options({
   }
 });
 
+var websocketClient;
+bittrex.websockets.client(function(client) {
+  websocketClient = client;
+});
 ```
 
 
 #### Available methods
-> websockets.listen, websockets.subscribe
+All of these methods will build a websocket client and attempt a connection if
+you have not run ``websockets.client`` yourself. See ``examples/`` for a better
+understanding.
 
-listen example
+
+#### websockets.listen
 ```javascript
-bittrex.websockets.listen( function( data ) {
+bittrex.websockets.listen(function(data, client) {
   if (data.M === 'updateSummaryState') {
     data.A.forEach(function(data_for) {
       data_for.Deltas.forEach(function(marketsDelta) {
@@ -176,9 +183,10 @@ bittrex.websockets.listen( function( data ) {
 });
 ```
 
-subscribe example
+
+#### websockets.subscribe
 ```javascript
-bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN'], function(data) {
+bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN'], function(data, client) {
   if (data.M === 'updateExchangeState') {
     data.A.forEach(function(data_for) {
       console.log('Market Update for '+ data_for.MarketName, data_for);
@@ -187,15 +195,16 @@ bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN'], function(data) {
 });
 ```
 
+
 #### Websocket serviceHandlers example
 You can override the libraries logic for the following events. Note, this will
 replace the libraries logic.
 ```javascript
-websocketsclient.serviceHandlers.reconnecting = function (message) {
+websocketClient.serviceHandlers.reconnecting = function (message) {
   return true; // set to true stops reconnect/retrying
 }
 
-websocketsclient.serviceHandlers.messageReceived = function (message) {
+websocketClient.serviceHandlers.messageReceived = function (message) {
   console.log(message); // the messages received must be parsed as json first e.g. via jsonic(message.utf8Data)
 }
 ```

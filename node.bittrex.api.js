@@ -141,6 +141,9 @@ var NodeBittrexApi = function() {
   };
 
   var connectws = function(callback) {
+    if (wsclient) {
+      return callback(wsclient);
+    }
     cloudscraper.get('https://bittrex.com/', function(error, response, body) {
       if (error) {
         console.error('Cloudscraper error occurred');
@@ -193,6 +196,7 @@ var NodeBittrexApi = function() {
             return false;
           }
         };
+        callback(wsclient);
       }
     });
     return wsclient;
@@ -204,7 +208,7 @@ var NodeBittrexApi = function() {
         var data = jsonic(message.utf8Data);
         if (data && data.M) {
           data.M.forEach(function(M) {
-            callback(M);
+            callback(M, wsclient);
           });
         } else {
           // ((opts.verbose) ? console.log('Unhandled data', data) : '');
@@ -240,18 +244,18 @@ var NodeBittrexApi = function() {
     },
     websockets: {
       client: function(callback) {
-        return connectws();
+        return connectws(callback);
       },
       listen: function(callback) {
-        var client = connectws();
-        setMessageReceivedWs(callback);
-        return client;
+        connectws(function() {
+          setMessageReceivedWs(callback);
+        });
       },
       subscribe: function(markets, callback) {
-        var client = connectws();
-        setConnectedWs(markets);
-        setMessageReceivedWs(callback);
-        return client;
+        connectws(function() {
+          setConnectedWs(markets);
+          setMessageReceivedWs(callback);
+        });
       }
     },
     sendCustomRequest: function(request_string, callback, credentials) {
