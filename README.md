@@ -140,7 +140,7 @@ bittrex.websockets.client(function() {
 ```javascript
 var websocketClient = bittrex.websockets.client();
 bittrex.options({
-  websocket: {
+  websockets: {
     onConnect: function() {
       console.log('Websocket connected');
       bittrex.websockets.subscribe(['BTC-ETH'], function(data) {
