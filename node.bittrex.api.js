@@ -150,8 +150,8 @@ var NodeBittrexApi = function() {
         console.error(error);
       } else {
         opts.headers = {
-          cookie: response.request.headers["cookie"],
-          user_agent: response.request.headers["User-Agent"]
+          cookie: (response.request.headers["cookie"] || ''),
+          user_agent: (response.request.headers["User-Agent"] || '')
         };
         wsclient = new signalR.client(
           opts.websockets_baseurl,
