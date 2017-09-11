@@ -71,7 +71,7 @@ Advanced start
 
 fetch the project via git:
 ```sh
-$ git clone https://github.com/n0mad01/node.bittrex.api.git
+$ git clone https://github.com/dparlevliet/node.bittrex.api.git
 ```
 
 then meet the package dependencies:
