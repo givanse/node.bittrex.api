@@ -196,7 +196,9 @@ var NodeBittrexApi = function() {
             return false;
           }
         };
-        callback(wsclient);
+        if (callback) {
+          callback(wsclient);
+        }
       }
     });
     return wsclient;
