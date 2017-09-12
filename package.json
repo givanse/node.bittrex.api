@@ -1,5 +1,5 @@
 {
-  "name": "node.bittrex.api",
+  "name": "node-bittrex-api",
   "version": "0.7.4",
   "description": "Node Bittrex API - asynchronous node.js library for the Bittrex API https://bittrex.com/",
   "keywords": [
