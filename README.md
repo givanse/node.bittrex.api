@@ -1,3 +1,16 @@
+!Important! Note
+----
+
+This is a maintained fork of the original package. **The npm package name has
+changed** because we could not get access to the npmjs repository to keep it
+updated. Please see the ``Quick start`` section for the new package name and
+instructions.
+
+Also, the **websocket code has changed** after Bittrex switched to using Cloudflare
+so please see the new ``Websockets`` documentation and updated unit tests and
+examples in the ``examples/`` folder.
+
+
 Node Bittrex API
 =========
 
@@ -20,6 +33,7 @@ Thanks go to the people who have contributed code to this Library.
 * [192-sean](https://github.com/192-sean)
 * [caffeinewriter](https://github.com/caffeinewriter)
 * [apense](https://github.com/apense)
+* [TheRealest](https://github.com/TheRealest)
 
 
 Before you start
@@ -44,11 +58,11 @@ Here is a small checklist you should go through before you start:
 Quick start
 ----
 ```sh
-$ npm install node.bittrex.api
+$ npm install node-bittrex-api
 ```
 
 ```javascript
-var bittrex = require('node.bittrex.api');
+var bittrex = require('node-bittrex-api');
 bittrex.options({
   'apikey' : API_KEY,
   'apisecret' : API_SECRET,
@@ -76,16 +90,16 @@ $ git clone https://github.com/dparlevliet/node.bittrex.api.git
 
 then meet the package dependencies:
 ```sh
-$ cd node-bittrex-api/
+$ cd node.bittrex.api/
 $ npm install
 ```
 
-include node.bittrex.api.js into your project:
+Include ``node.bittrex.api.js`` into your project:
 ```javascript
 var bittrex = require('./node.bittrex.api.js');
 ```
 
-##### configure
+##### Configuration
 ```javascript
 bittrex.options({
   'apikey' : API_KEY,
