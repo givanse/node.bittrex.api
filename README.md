@@ -419,16 +419,6 @@ bittrex.getmarkethistory({ market : 'BTC-LTC' }, function( data, err ) {
 });
 ```
 
-##### getcandles (v2 method)
-```javascript
-bittrex.getcandles({
-  marketName: 'USDT-BTC',
-  tickInterval: 'fiveMin', // intervals are keywords
-}, function( data, err ) {
-  console.log( data );
-});
-```
-
 ##### getmarketsummaries
 ```javascript
 bittrex.getmarketsummaries( function( data, err ) {
@@ -481,6 +471,50 @@ bittrex.getbalance({ currency : 'BTC' }, function( data, err ) {
 ##### withdraw
 ```javascript
 bittrex.withdraw({ currency : 'BTC', quantity : '1.5112', address : 'THE_ADDRESS' }, function( data, err ) {
+  console.log( data );
+});
+```
+
+
+Supported v2 API methods
+------
+
+##### getcandles
+```javascript
+bittrex.getcandles({
+  marketName: 'USDT-BTC',
+  tickInterval: 'fiveMin', // intervals are keywords
+}, function( data, err ) {
+  console.log( data );
+});
+```
+
+##### selltrade
+```javascript
+bittrex.selltrade({
+  MarketName: 'BTC-ZEC',
+  OrderType: 'LIMIT',
+  Quantity: 1.00000000,
+  Rate: 0.04423432,
+  TimeInEffect: 'IMMEDIATE_OR_CANCEL', // supported options are 'IMMEDIATE_OR_CANCEL' or 'GOOD_TIL_CANCELLED'
+  ConditionType: 'NONE',
+  Target: 0,
+}, function( data, err ) {
+  console.log( data );
+});
+```
+
+##### buytrade
+```javascript
+bittrex.buytrade({
+  MarketName: 'BTC-ZEC',
+  OrderType: 'LIMIT',
+  Quantity: 1.00000000,
+  Rate: 0.04423432,
+  TimeInEffect: 'IMMEDIATE_OR_CANCEL', // supported options are 'IMMEDIATE_OR_CANCEL' or 'GOOD_TIL_CANCELLED'
+  ConditionType: 'NONE',
+  Target: 0,
+}, function( data, err ) {
   console.log( data );
 });
 ```
