@@ -479,6 +479,10 @@ bittrex.withdraw({ currency : 'BTC', quantity : '1.5112', address : 'THE_ADDRESS
 Supported v2 API methods
 ------
 
+Little is known about the v2 api at present. We have support for only a few methods
+with very little documentation. Given that the v2 api is still indevelopment by
+Bittrex it is possible these methods will change or become invalid without notice.
+
 ##### getcandles
 ```javascript
 bittrex.getcandles({
