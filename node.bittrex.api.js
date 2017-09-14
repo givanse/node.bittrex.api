@@ -214,7 +214,7 @@ var NodeBittrexApi = function() {
           });
         } else {
           // ((opts.verbose) ? console.log('Unhandled data', data) : '');
-          callback({'unhandled_data' : data});
+          callback({'unhandled_data' : data}, wsclient);
         }
       } catch (e) {
         ((opts.verbose) ? console.error(e) : '');
