@@ -185,6 +185,8 @@ understanding.
 
 
 #### websockets.listen
+This will subscribe to just the global data such as ticker updates.
+
 ```javascript
 bittrex.websockets.listen(function(data, client) {
   if (data.M === 'updateSummaryState') {
@@ -199,6 +201,10 @@ bittrex.websockets.listen(function(data, client) {
 
 
 #### websockets.subscribe
+This will subscribe to both the global and the specified market data. To build
+your candle data, order book and market history, etc. you will need to subscribe
+to the individual markets you wish to watch. You can subscribe to all of them.
+
 ```javascript
 bittrex.websockets.subscribe(['BTC-ETH','BTC-SC','BTC-ZEN'], function(data, client) {
   if (data.M === 'updateExchangeState') {
