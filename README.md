@@ -493,9 +493,9 @@ bittrex.getcandles({
 });
 ```
 
-##### selltrade
+##### tradesell
 ```javascript
-bittrex.selltrade({
+bittrex.tradesell({
   MarketName: 'BTC-ZEC',
   OrderType: 'LIMIT',
   Quantity: 1.00000000,
@@ -508,9 +508,9 @@ bittrex.selltrade({
 });
 ```
 
-##### buytrade
+##### tradebuy
 ```javascript
-bittrex.buytrade({
+bittrex.tradebuy({
   MarketName: 'BTC-ZEC',
   OrderType: 'LIMIT',
   Quantity: 1.00000000,
