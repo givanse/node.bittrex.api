@@ -304,10 +304,10 @@ var NodeBittrexApi = function() {
       credentialApiCall(opts.baseUrl + '/market/selllimit', callback, options);
     },
     tradesell: function(options, callback) {
-      publicApiCall(opts.baseUrlv2 + '/auth/market/TradeSell', callback, options);
+      credentialApiCall(opts.baseUrlv2 + '/auth/market/TradeSell', callback, options);
     },
     tradebuy: function(options, callback) {
-      publicApiCall(opts.baseUrlv2 + '/auth/market/TradeBuy', callback, options);
+      credentialApiCall(opts.baseUrlv2 + '/auth/market/TradeBuy', callback, options);
     },
     sellmarket: function(options, callback) {
       credentialApiCall(opts.baseUrl + '/market/sellmarket', callback, options);
