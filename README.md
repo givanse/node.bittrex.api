@@ -3,7 +3,7 @@
 
 This is a maintained fork of the original package. **The npm package name has
 changed** because we could not get access to the npmjs repository to keep it
-updated. Please see the ``Quick start`` section for the new package name and
+updated. Please see the [Quick start](https://github.com/dparlevliet/node.bittrex.api#quick-start) section for the new package name and
 instructions.
 
 Also, the **websocket code has changed** after Bittrex switched to using Cloudflare
