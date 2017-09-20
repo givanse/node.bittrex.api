@@ -5,7 +5,7 @@ var config = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 
 bittrex.options({
   'apikey' : config.api.key,
-  'apisecret' : config.api.secret, 
+  'apisecret' : config.api.secret,
 });
 
 describe('Bittrex private API', function() {
@@ -60,6 +60,31 @@ describe('Bittrex private API', function() {
         done();
       });
     }, 500); //delay the tests so we do not trigger any Bittrex rate limits
+  });
+
+  it('should handle concurrent requests without a nonce collision', function(done) {
+    this.timeout(15000);
+    var completed = 0;
+    var run = function() {
+      setTimeout(function() {
+        bittrex.getorderhistory({}, function(data, err) {
+          assert.equal(err, null);
+          assert.ok(data.success == true);
+          completed++;
+          if (completed == 8) {
+            done();
+          }
+        });
+      }); //delay the tests so we do not trigger any Bittrex rate limits
+    };
+    run();
+    run();
+    run();
+    run();
+    run();
+    run();
+    run();
+    run();
   });
 
 });

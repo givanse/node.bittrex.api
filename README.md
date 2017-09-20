@@ -34,6 +34,7 @@ Thanks go to the people who have contributed code to this Library.
 * [caffeinewriter](https://github.com/caffeinewriter)
 * [apense](https://github.com/apense)
 * [TheRealest](https://github.com/TheRealest)
+* [Alexsey](https://github.com/Alexsey)
 
 
 Before you start
