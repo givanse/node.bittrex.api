@@ -92,6 +92,7 @@ var NodeBittrexApi = function() {
 
     op.headers.apisign = hmac_sha512.HmacSHA512(uri, opts.apisecret); // setting the HMAC hash `apisign` http header
     op.uri = uri;
+    op.timeout = 15000;
 
     return op;
   };

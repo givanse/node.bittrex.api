@@ -1,5 +1,6 @@
 0.7.6
-  - Fix for possible nonce collisions if performing multiple requests per second
+  - Fix for possible nonce collisions if performing multiple requests per second #29
+  - Added 15s timeout to all requests #26
 
 0.7.5
   - Added ``tradebuy`` and ``tradesell`` methods which make use of the v2 api features that you will find on the Bittrex website such as IOC and FOK.
