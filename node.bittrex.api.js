@@ -37,6 +37,7 @@ var NodeBittrexApi = function() {
     verbose: false,
     cleartext: false,
     inverse_callback_arguments: false,
+    requestTimeoutInSeconds: 15,
   };
 
   var lastNonces = [];
@@ -92,7 +93,7 @@ var NodeBittrexApi = function() {
 
     op.headers.apisign = hmac_sha512.HmacSHA512(uri, opts.apisecret); // setting the HMAC hash `apisign` http header
     op.uri = uri;
-    op.timeout = 15000;
+    op.timeout = opts.requestTimeoutInSeconds * 1000;
 
     return op;
   };
