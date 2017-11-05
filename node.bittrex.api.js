@@ -126,8 +126,10 @@ var NodeBittrexApi = function() {
           callback(errorObj, null) :
           callback(null, errorObj));
       } else {
-        result = JSON.parse(body);
-        if (!result.success) {
+        try {
+          result = JSON.parse(body);
+        } catch (err) {}
+        if (!result || !result.success) {
           // error returned by bittrex API - forward the result as an error
           return ((opts.inverse_callback_arguments) ?
             callback(result, null) :
@@ -361,4 +363,3 @@ var NodeBittrexApi = function() {
 }();
 
 module.exports = NodeBittrexApi;
-
