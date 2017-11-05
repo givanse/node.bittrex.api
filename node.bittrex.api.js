@@ -37,6 +37,9 @@ var NodeBittrexApi = function() {
     verbose: false,
     cleartext: false,
     inverse_callback_arguments: false,
+    websockets: {
+      autoReconnect: true,
+    }
   };
 
   var lastNonces = [];
@@ -196,7 +199,17 @@ var NodeBittrexApi = function() {
             if (opts.websockets && typeof(opts.websockets.onDisconnect) === 'function') {
               opts.websockets.onDisconnect();
             }
-            wsclient.start(); // ensure we try reconnect
+
+            if (
+              opts.websockets &&
+              (
+                opts.websockets.autoReconnect === true ||
+                typeof(opts.websockets.autoReconnect) === 'undefined'
+              )
+            ) {
+              ((opts.verbose) ? console.log('Websocket auto reconnecting.') : '');
+              wsclient.start(); // ensure we try reconnect
+            }
           },
           onerror: function(error) {
             ((opts.verbose) ? console.log('Websocket onerror: ', error) : '');
