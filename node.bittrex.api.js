@@ -37,6 +37,10 @@ var NodeBittrexApi = function(options) {
     verbose: false,
     cleartext: false,
     inverse_callback_arguments: false,
+    websockets: {
+      autoReconnect: true,
+    },
+    requestTimeoutInSeconds: 15,
   };
 
   var lastNonces = [];
@@ -96,7 +100,7 @@ var NodeBittrexApi = function(options) {
 
     op.headers.apisign = hmac_sha512.HmacSHA512(uri, opts.apisecret); // setting the HMAC hash `apisign` http header
     op.uri = uri;
-    op.timeout = 15000;
+    op.timeout = opts.requestTimeoutInSeconds * 1000;
 
     return op;
   };
@@ -130,8 +134,10 @@ var NodeBittrexApi = function(options) {
           callback(errorObj, null) :
           callback(null, errorObj));
       } else {
-        result = JSON.parse(body);
-        if (!result.success) {
+        try {
+          result = JSON.parse(body);
+        } catch (err) {}
+        if (!result || !result.success) {
           // error returned by bittrex API - forward the result as an error
           return ((opts.inverse_callback_arguments) ?
             callback(result, null) :
@@ -198,7 +204,17 @@ var NodeBittrexApi = function(options) {
             if (opts.websockets && typeof(opts.websockets.onDisconnect) === 'function') {
               opts.websockets.onDisconnect();
             }
-            wsclient.start(); // ensure we try reconnect
+
+            if (
+              opts.websockets &&
+              (
+                opts.websockets.autoReconnect === true ||
+                typeof(opts.websockets.autoReconnect) === 'undefined'
+              )
+            ) {
+              ((opts.verbose) ? console.log('Websocket auto reconnecting.') : '');
+              wsclient.start(); // ensure we try reconnect
+            }
           },
           onerror: function(error) {
             ((opts.verbose) ? console.log('Websocket onerror: ', error) : '');
