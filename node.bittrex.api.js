@@ -165,9 +165,17 @@ var NodeBittrexApi = function(options) {
     sendRequestCallback(callback, options);
   };
 
-  var connectws = function(callback) {
-    if (wsclient) {
+  var websocketGlobalTickers = false;
+  var websocketGlobalTickerCallback;
+  var websocketMarkets = [];
+  var websocketMarketsCallback;
+
+  var connectws = function(callback, force) {
+    if (wsclient && !force && callback) {
       return callback(wsclient);
+    }
+    if (force) {
+      try { wsclient.end(); } catch (e) {}
     }
     cloudscraper.get('https://bittrex.com/', function(error, response, body) {
       if (error) {
@@ -229,7 +237,35 @@ var NodeBittrexApi = function(options) {
             ((opts.verbose) ? console.log('Websocket Retrying: ', retry) : '');
             // change to true to stop retrying
             return false;
-          }
+          },
+          connected: function() {
+            if (websocketGlobalTickers) {
+              wsclient.call('CoreHub', 'SubscribeToSummaryDeltas').done(function(err, result) {
+                if (err) {
+                  return console.error(err);
+                }
+
+                if (result === true) {
+                  ((opts.verbose) ? console.log('Subscribed to global tickers') : '');
+                }
+              });
+            }
+
+            if (websocketMarkets.length > 0) {
+              websocketMarkets.forEach(function(market) {
+                wsclient.call('CoreHub', 'SubscribeToExchangeDeltas', market).done(function(err, result) {
+                  if (err) {
+                    return console.error(err);
+                  }
+
+                  if (result === true) {
+                    ((opts.verbose) ? console.log('Subscribed to ' + market) : '');
+                  }
+                });
+              });
+            }
+            ((opts.verbose) ? console.log('Websocket connected') : '');
+          },
         };
         if (callback) {
           callback(wsclient);
@@ -239,17 +275,27 @@ var NodeBittrexApi = function(options) {
     return wsclient;
   };
 
-  var setMessageReceivedWs = function(callback) {
+  var setMessageReceivedWs = function() {
     wsclient.serviceHandlers.messageReceived = function(message) {
       try {
         var data = jsonic(message.utf8Data);
         if (data && data.M) {
           data.M.forEach(function(M) {
-            callback(M, wsclient);
+            if (websocketGlobalTickerCallback) {
+              websocketGlobalTickerCallback(M, wsclient);
+            }
+            if (websocketMarketsCallback) {
+              websocketMarketsCallback(M, wsclient);
+            }
           });
         } else {
           // ((opts.verbose) ? console.log('Unhandled data', data) : '');
-          callback({'unhandled_data' : data}, wsclient);
+          if (websocketGlobalTickerCallback) {
+            websocketGlobalTickerCallback({'unhandled_data' : data}, wsclient);
+          }
+          if (websocketMarketsCallback) {
+            websocketMarketsCallback({'unhandled_data' : data}, wsclient);
+          }
         }
       } catch (e) {
         ((opts.verbose) ? console.error(e) : '');
@@ -258,41 +304,27 @@ var NodeBittrexApi = function(options) {
     };
   };
 
-  var setConnectedWs = function(markets) {
-    wsclient.serviceHandlers.connected = function(connection) {
-      markets.forEach(function(market) {
-        wsclient.call('CoreHub', 'SubscribeToExchangeDeltas', market).done(function(err, result) {
-          if (err) {
-            return console.error(err);
-          }
-
-          if (result === true) {
-            ((opts.verbose) ? console.log('Subscribed to ' + market) : '');
-          }
-        });
-      });
-      ((opts.verbose) ? console.log('Websocket connected') : '');
-    };
-  };
-
   return {
     options: function(options) {
       extractOptions(options);
     },
     websockets: {
-      client: function(callback) {
-        return connectws(callback);
+      client: function(callback, force) {
+        return connectws(callback, force);
       },
-      listen: function(callback) {
+      listen: function(callback, force) {
         connectws(function() {
-          setMessageReceivedWs(callback);
-        });
+          websocketGlobalTickers = true;
+          websocketGlobalTickerCallback = callback;
+          setMessageReceivedWs();
+        }, force);
       },
-      subscribe: function(markets, callback) {
+      subscribe: function(markets, callback, force) {
         connectws(function() {
-          setConnectedWs(markets);
-          setMessageReceivedWs(callback);
-        });
+          websocketMarkets = markets;
+          websocketMarketsCallback = callback;
+          setMessageReceivedWs();
+        }, force);
       }
     },
     sendCustomRequest: function(request_string, callback, credentials) {

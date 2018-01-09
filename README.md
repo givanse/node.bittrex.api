@@ -186,7 +186,7 @@ understanding.
 
 
 #### websockets.listen
-This will subscribe to just the global data such as ticker updates.
+This will subscribe to just the global ticker updates.
 
 ```javascript
 bittrex.websockets.listen(function(data, client) {
@@ -202,7 +202,7 @@ bittrex.websockets.listen(function(data, client) {
 
 
 #### websockets.subscribe
-This will subscribe to both the global and the specified market data. To build
+This will subscribe to the specified markets data. To build
 your candle data, order book and market history, etc. you will need to subscribe
 to the individual markets you wish to watch. You can subscribe to all of them.
 
@@ -487,7 +487,7 @@ Supported v2 API methods
 ------
 
 Little is known about the v2 api at present. We have support for only a few methods
-with very little documentation. Given that the v2 api is still indevelopment by
+with very little documentation. Given that the v2 api is still in development by
 Bittrex it is possible these methods will change or become invalid without notice.
 
 ##### getcandles
