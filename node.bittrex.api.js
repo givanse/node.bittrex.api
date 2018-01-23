@@ -48,9 +48,8 @@ var NodeBittrexApi = function() {
   var getNonce = function() {
     var nonce = new Date().getTime();
 
-    if (lastNonces.indexOf(nonce) > -1) {
-      // we already used this nonce so keep trying to get a new one.
-      return getNonce();
+    while (lastNonces.indexOf(nonce) > -1) {
+      nonce = new Date().getTime(); // Repetition of the above. This can probably done better :-)
     }
 
     // keep the last X to try ensure we don't have collisions even if the clock is adjusted
@@ -164,7 +163,14 @@ var NodeBittrexApi = function() {
   var websocketGlobalTickers = false;
   var websocketGlobalTickerCallback;
   var websocketMarkets = [];
-  var websocketMarketsCallback;
+  var websocketMarketsCallbacks = [];
+
+  var resetWs = function() {
+    websocketGlobalTickers = false;
+    websocketGlobalTickerCallback = undefined;
+    websocketMarkets = [];
+    websocketMarketsCallbacks = [];
+  };
 
   var connectws = function(callback, force) {
     if (wsclient && !force && callback) {
@@ -197,6 +203,7 @@ var NodeBittrexApi = function() {
           bound: function() {
             ((opts.verbose) ? console.log('Websocket bound') : '');
             if (opts.websockets && typeof(opts.websockets.onConnect) === 'function') {
+              resetWs();
               opts.websockets.onConnect();
             }
           },
@@ -280,8 +287,10 @@ var NodeBittrexApi = function() {
             if (websocketGlobalTickerCallback) {
               websocketGlobalTickerCallback(M, wsclient);
             }
-            if (websocketMarketsCallback) {
-              websocketMarketsCallback(M, wsclient);
+            if (websocketMarketsCallbacks.length > 0) {
+              websocketMarketsCallbacks.forEach(function(callback) {
+                callback(M, wsclient);
+              });
             }
           });
         } else {
@@ -289,8 +298,10 @@ var NodeBittrexApi = function() {
           if (websocketGlobalTickerCallback) {
             websocketGlobalTickerCallback({'unhandled_data' : data}, wsclient);
           }
-          if (websocketMarketsCallback) {
-            websocketMarketsCallback({'unhandled_data' : data}, wsclient);
+          if (websocketMarketsCallbacks.length > 0) {
+            websocketMarketsCallbacks.forEach(function(callback) {
+              callback({'unhandled_data' : data}, wsclient);
+            });
           }
         }
       } catch (e) {
@@ -317,8 +328,8 @@ var NodeBittrexApi = function() {
       },
       subscribe: function(markets, callback) {
         connectws(function() {
-          websocketMarkets = markets;
-          websocketMarketsCallback = callback;
+          websocketMarkets = websocketMarkets.concat(markets);
+          websocketMarketsCallbacks.push(callback);
           setMessageReceivedWs();
         });
       }
