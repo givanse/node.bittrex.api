@@ -450,7 +450,7 @@ bittrex.getmarketsummary( { market : 'BTC-LTC'}, function( data, err ) {
 
 ##### getorderbook
 ```javascript
-bittrex.getorderbook({ market : 'BTC-LTC', depth : 10, type : 'both' }, function( data, err ) {
+bittrex.getorderbook({ market : 'BTC-LTC', type : 'both' }, function( data, err ) {
   console.log( data );
 });
 ```

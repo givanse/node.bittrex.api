@@ -164,6 +164,8 @@ var NodeBittrexApi = function() {
   var websocketGlobalTickerCallback;
   var websocketMarkets = [];
   var websocketMarketsCallbacks = [];
+  var websocketLastMessage = (new Date()).getTime();
+  var websocketWatchDog = undefined;
 
   var resetWs = function() {
     websocketGlobalTickers = false;
@@ -176,110 +178,146 @@ var NodeBittrexApi = function() {
     if (wsclient && !force && callback) {
       return callback(wsclient);
     }
+
     if (force) {
       try { wsclient.end(); } catch (e) {}
     }
+    
+    if (!websocketWatchDog) {
+      websocketWatchDog = setInterval(function() {
+        if (!wsclient) {
+          return;
+        }
+
+        if (
+          opts.websockets &&
+          (
+            opts.websockets.autoReconnect === true ||
+            typeof(opts.websockets.autoReconnect) === 'undefined'
+          )
+        ) {
+          var now = (new Date()).getTime();
+          var diff = now - websocketLastMessage;
+  
+          if (diff > 60 * 1000) {
+            ((opts.verbose) ? console.log('Websocket Watch Dog: Websocket has not received communication for over 1 minute. Forcing reconnection. Ruff!') : '');
+            connectws(callback, true);
+          } else {
+            ((opts.verbose) ? console.log('Websocket Watch Dog: Last message received '+diff+'ms ago. Ruff!') : '');
+          }
+        }
+      }, 5 * 1000);
+    }
+
     cloudscraper.get('https://bittrex.com/', function(error, response, body) {
       if (error) {
         console.error('Cloudscraper error occurred');
         console.error(error);
-      } else {
-        opts.headers = {
-          cookie: (response.request.headers["cookie"] || ''),
-          user_agent: (response.request.headers["User-Agent"] || '')
-        };
-        wsclient = new signalR.client(
-          opts.websockets_baseurl,
-          opts.websockets_hubs,
-         undefined,
-         true
-        );
-        if (opts.headers) {
-          wsclient.headers['User-Agent'] = opts.headers.user_agent;
-          wsclient.headers['cookie'] = opts.headers.cookie;
-        }
-        wsclient.start();
-        wsclient.serviceHandlers = {
-          bound: function() {
-            ((opts.verbose) ? console.log('Websocket bound') : '');
-            if (opts.websockets && typeof(opts.websockets.onConnect) === 'function') {
-              resetWs();
-              opts.websockets.onConnect();
-            }
-          },
-          connectFailed: function(error) {
-            ((opts.verbose) ? console.log('Websocket connectFailed: ', error) : '');
-          },
-          disconnected: function() {
-            ((opts.verbose) ? console.log('Websocket disconnected') : '');
-            if (opts.websockets && typeof(opts.websockets.onDisconnect) === 'function') {
-              opts.websockets.onDisconnect();
-            }
+        return;
+      }
 
-            if (
-              opts.websockets &&
-              (
-                opts.websockets.autoReconnect === true ||
-                typeof(opts.websockets.autoReconnect) === 'undefined'
-              )
-            ) {
-              ((opts.verbose) ? console.log('Websocket auto reconnecting.') : '');
-              wsclient.start(); // ensure we try reconnect
-            }
-          },
-          onerror: function(error) {
-            ((opts.verbose) ? console.log('Websocket onerror: ', error) : '');
-          },
-          bindingError: function(error) {
-            ((opts.verbose) ? console.log('Websocket bindingError: ', error) : '');
-          },
-          connectionLost: function(error) {
-            ((opts.verbose) ? console.log('Connection Lost: ', error) : '');
-          },
-          reconnecting: function(retry) {
-            ((opts.verbose) ? console.log('Websocket Retrying: ', retry) : '');
-            // change to true to stop retrying
-            return false;
-          },
-          connected: function() {
-            if (websocketGlobalTickers) {
-              wsclient.call('CoreHub', 'SubscribeToSummaryDeltas').done(function(err, result) {
+      opts.headers = {
+        cookie: (response.request.headers["cookie"] || ''),
+        user_agent: (response.request.headers["User-Agent"] || '')
+      };
+
+      wsclient = new signalR.client(
+        opts.websockets_baseurl,
+        opts.websockets_hubs,
+       undefined,
+       true
+      );
+
+      if (opts.headers) {
+        wsclient.headers['User-Agent'] = opts.headers.user_agent;
+        wsclient.headers['cookie'] = opts.headers.cookie;
+      }
+
+      wsclient.start();
+      wsclient.serviceHandlers = {
+        bound: function() {
+          ((opts.verbose) ? console.log('Websocket bound') : '');
+          if (opts.websockets && typeof(opts.websockets.onConnect) === 'function') {
+            resetWs();
+            opts.websockets.onConnect();
+          }
+        },
+        connectFailed: function(error) {
+          ((opts.verbose) ? console.log('Websocket connectFailed: ', error) : '');
+        },
+        disconnected: function() {
+          ((opts.verbose) ? console.log('Websocket disconnected') : '');
+          if (opts.websockets && typeof(opts.websockets.onDisconnect) === 'function') {
+            opts.websockets.onDisconnect();
+          }
+
+          if (
+            opts.websockets &&
+            (
+              opts.websockets.autoReconnect === true ||
+              typeof(opts.websockets.autoReconnect) === 'undefined'
+            )
+          ) {
+            ((opts.verbose) ? console.log('Websocket auto reconnecting.') : '');
+            wsclient.start(); // ensure we try reconnect
+          }
+        },
+        onerror: function(error) {
+          ((opts.verbose) ? console.log('Websocket onerror: ', error) : '');
+        },
+        bindingError: function(error) {
+          ((opts.verbose) ? console.log('Websocket bindingError: ', error) : '');
+        },
+        connectionLost: function(error) {
+          ((opts.verbose) ? console.log('Connection Lost: ', error) : '');
+        },
+        reconnecting: function(retry) {
+          ((opts.verbose) ? console.log('Websocket Retrying: ', retry) : '');
+          // change to true to stop retrying
+          return false;
+        },
+        connected: function() {
+          if (websocketGlobalTickers) {
+            wsclient.call('CoreHub', 'SubscribeToSummaryDeltas').done(function(err, result) {
+              if (err) {
+                return console.error(err);
+              }
+
+              if (result === true) {
+                ((opts.verbose) ? console.log('Subscribed to global tickers') : '');
+              }
+            });
+          }
+
+          if (websocketMarkets.length > 0) {
+            websocketMarkets.forEach(function(market) {
+              wsclient.call('CoreHub', 'SubscribeToExchangeDeltas', market).done(function(err, result) {
                 if (err) {
                   return console.error(err);
                 }
 
                 if (result === true) {
-                  ((opts.verbose) ? console.log('Subscribed to global tickers') : '');
+                  ((opts.verbose) ? console.log('Subscribed to ' + market) : '');
                 }
               });
-            }
+            });
+          }
+          ((opts.verbose) ? console.log('Websocket connected') : '');
+        },
+      };
 
-            if (websocketMarkets.length > 0) {
-              websocketMarkets.forEach(function(market) {
-                wsclient.call('CoreHub', 'SubscribeToExchangeDeltas', market).done(function(err, result) {
-                  if (err) {
-                    return console.error(err);
-                  }
-
-                  if (result === true) {
-                    ((opts.verbose) ? console.log('Subscribed to ' + market) : '');
-                  }
-                });
-              });
-            }
-            ((opts.verbose) ? console.log('Websocket connected') : '');
-          },
-        };
-        if (callback) {
-          callback(wsclient);
-        }
+      if (callback) {
+        callback(wsclient);
       }
+      
     });
+
     return wsclient;
   };
 
   var setMessageReceivedWs = function() {
     wsclient.serviceHandlers.messageReceived = function(message) {
+      websocketLastMessage = (new Date()).getTime();
       try {
         var data = jsonic(message.utf8Data);
         if (data && data.M) {
@@ -368,6 +406,12 @@ var NodeBittrexApi = function() {
     getcandles: function(options, callback) {
       publicApiCall(opts.baseUrlv2 + '/pub/market/GetTicks', callback, options);
     },
+    getticks: function(options, callback) {
+      publicApiCall(opts.baseUrlv2 + '/pub/market/GetTicks', callback, options);
+    },
+    getlatesttick: function(options, callback) {
+      publicApiCall(opts.baseUrlv2 + '/pub/market/GetLatestTick', callback, options);
+    },
     buylimit: function(options, callback) {
       credentialApiCall(opts.baseUrl + '/market/buylimit', callback, options);
     },
@@ -415,7 +459,10 @@ var NodeBittrexApi = function() {
     },
     withdraw: function(options, callback) {
       credentialApiCall(opts.baseUrl + '/account/withdraw', callback, options);
-    }
+    },
+    getbtcprice: function(options, callback) {
+      publicApiCall(opts.baseUrlv2 + '/pub/currencies/GetBTCPrice', callback, options);
+    },
   };
 }();
 
