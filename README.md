@@ -1,3 +1,8 @@
+Important
+----
+I refuse to answer questions or work on this library until Bittrex answer my ticket and unlock my account. My ticket has been open for 60 days and counting. I'm not recommending anyone use Bittrex right now.
+
+
 !Important! Note
 ----
 
