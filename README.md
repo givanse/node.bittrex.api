@@ -1,8 +1,3 @@
-Important
-----
-I refuse to answer questions or work on this library until Bittrex answer my ticket and unlock my account. My ticket has been open for 60 days and counting. I'm not recommending anyone use Bittrex right now. Note: They have all of my ID already (my account is ehanced verified already), and I have provided additional ID in the support ticket. I have been nothing but open with Bittrex from the beginning. I have nothing wrong with the KYC process. Ticket #548156
-
-
 !Important! Note
 ----
 
