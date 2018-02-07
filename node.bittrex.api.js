@@ -260,6 +260,12 @@ var NodeBittrexApi = function() {
           ) {
             ((opts.verbose) ? console.log('Websocket auto reconnecting.') : '');
             wsclient.start(); // ensure we try reconnect
+          } else {
+            // otherwise, clear the watchdog interval if necessary
+            if (websocketWatchDog) {
+              clearInterval(websocketWatchDog);
+              websocketWatchDog = null;
+            }
           }
         },
         onerror: function(error) {
