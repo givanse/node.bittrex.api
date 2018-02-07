@@ -7,7 +7,7 @@
  * Released under the MIT License
  * ============================================================ */
 
-var NodeBittrexApi = function() {
+var NodeBittrexApi = function(options) {
   'use strict';
 
   var request = require('request'),
@@ -67,6 +67,10 @@ var NodeBittrexApi = function() {
       opts[o[i]] = options[o[i]];
     }
   };
+
+  if (options) {
+    extractOptions(options);
+  }
 
   var apiCredentials = function(uri) {
     var options = {
@@ -470,6 +474,8 @@ var NodeBittrexApi = function() {
       publicApiCall(opts.baseUrlv2 + '/pub/currencies/GetBTCPrice', callback, options);
     },
   };
-}();
+};
 
-module.exports = NodeBittrexApi;
+module.exports = NodeBittrexApi();
+
+module.exports.createInstance = NodeBittrexApi;
