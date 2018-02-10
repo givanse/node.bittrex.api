@@ -282,9 +282,13 @@ var NodeBittrexApi = function(options) {
           ((opts.verbose) ? console.log('Connection Lost: ', error) : '');
         },
         reconnecting: function(retry) {
-          ((opts.verbose) ? console.log('Websocket Retrying: ', retry) : '');
+          // Disabled in 0.8.3
+          // Websocket reconnection is now handled by the library. Enabling this
+          // can cause double connections.
+          //
+          // ((opts.verbose) ? console.log('Websocket Retrying: ', retry) : '');
           // change to true to stop retrying
-          return false;
+          return true;
         },
         connected: function() {
           if (websocketGlobalTickers) {
