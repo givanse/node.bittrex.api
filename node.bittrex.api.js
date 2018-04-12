@@ -324,7 +324,7 @@ var NodeBittrexApi = function(options) {
         callback(wsclient);
       }
       
-    });
+    }, opts.cloudscraper_headers || {});
 
     return wsclient;
   };
