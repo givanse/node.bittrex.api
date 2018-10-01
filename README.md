@@ -538,34 +538,19 @@ bittrex.tradebuy({
 });
 ```
 
+# Testing
 
-Testing
-----
-
-Installing test gear
-```bash
-npm install --only=dev
-```
-
-Running all tests
-```bash
-npm test tests
-```
-
-or individually
-```bash
-npm test tests/public.js
-npm test tests/private.js
-```
-
-##### Testing private methods
-
-Testing private method endpoints requires an api key/secret which should be
-installed in to ``tests/config.json`` - you will find an example file in
-``tests/config_example.json``.
+Testing requires an api key/secret which should be
+installed in to `tests/config.json` - you will find an example file in
+`tests/config_example.json`.
 
 ```bash
 cp tests/tests_example.json tests/config.json
 vim tests/config.json
+```
+
+Running the tests
+```bash
+npm test
 ```
 

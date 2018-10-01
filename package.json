@@ -4,10 +4,10 @@
   "description": "Node Bittrex API - asynchronous node.js library for the Bittrex API https://bittrex.com/",
   "keywords": [
     "btc",
-    "xbt",
     "bitcoin",
     "altcoin",
-    "bittrex"
+    "bittrex",
+    "exchange"
   ],
   "author": "David Parlevliet ( https://github.com/dparlevliet )",
   "contributors": [],
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/dparlevliet/node.bittrex.api",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --opts mocha.ops tests/**/*.js"
   },
   "devDependencies": {
     "mocha": "^3.3.0"
