@@ -1,10 +1,9 @@
+require('dotenv').config();
 var assert = require('assert');
-var fs = require('fs');
-var config = JSON.parse(fs.readFileSync(__dirname+'/config.json'));
 let bittrex = require('../node.bittrex.api.js');
 bittrex.options({
-  'apikey' : config.api.key,
-  'apisecret' : config.api.secret,
+  'apikey' : process.env.BITTREX_KEY,
+  'apisecret' : process.env.BITTREX_SECRET,
 });
 
 describe('Bittrex private API', function() {

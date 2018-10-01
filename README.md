@@ -541,12 +541,12 @@ bittrex.tradebuy({
 # Testing
 
 Testing requires an api key/secret which should be
-installed in to `tests/config.json` - you will find an example file in
-`tests/config_example.json`.
+installed in to `.env` - you will find an example file in
+`.env_example`.
 
 ```bash
-cp tests/tests_example.json tests/config.json
-vim tests/config.json
+cp .env_example .env
+vim .env
 ```
 
 Running the tests
